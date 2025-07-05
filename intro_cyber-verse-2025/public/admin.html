@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyber Verse 2025 - Admin Panel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background-color: #111827;
+            color: #0ff;
+            min-height: 100vh;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .admin-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #0ff;
+        }
+        
+        .admin-header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 10px #0ff;
+        }
+        
+        .admin-panel {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            flex: 1;
+        }
+        
+        .admin-card {
+            background-color: #1f2937;
+            border: 1px solid #0ff;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
+        }
+        
+        .admin-card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #0ff;
+            text-shadow: 0 0 5px #0ff;
+        }
+        
+        .status-display {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .status-item .label {
+            font-weight: bold;
+        }
+        
+        .status-item .value {
+            padding: 0.5rem 1rem;
+            background-color: #374151;
+            border-radius: 0.25rem;
+            min-width: 100px;
+            text-align: center;
+        }
+        
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .control-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 0.25rem;
+            padding: 0.75rem 1.5rem;
+            font-family: 'Orbitron', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            background-color: #2563eb;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+        }
+        
+        button.reset {
+            background-color: #ef4444;
+        }
+        
+        button.reset:hover {
+            background-color: #dc2626;
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+        }
+        
+        button:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+        }
+        
+        .log-container {
+            height: 300px;
+            overflow-y: auto;
+            background-color: #111827;
+            border: 1px solid #374151;
+            border-radius: 0.25rem;
+            padding: 0.5rem;
+            font-family: monospace;
+            font-size: 0.875rem;
+            margin-top: 1rem;
+        }
+        
+        .log-entry {
+            margin-bottom: 0.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #374151;
+        }
+        
+        .log-entry .timestamp {
+            color: #9ca3af;
+            margin-right: 0.5rem;
+        }
+        
+        .log-entry.info .message {
+            color: #3b82f6;
+        }
+        
+        .log-entry.success .message {
+            color: #10b981;
+        }
+        
+        .log-entry.warning .message {
+            color: #f59e0b;
+        }
+        
+        .log-entry.error .message {
+            color: #ef4444;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="admin-header">
+        <h1>CYBER VERSE 2025 - ADMIN PANEL</h1>
+        <p>Event Control System</p>
+    </div>
+    
+    <div class="admin-panel">
+        <div class="admin-card">
+            <h2>Event Status</h2>
+            <div class="status-display">
+                <div class="status-item">
+                    <span class="label">Current Clicks:</span>
+                    <span class="value" id="current-clicks">0</span>
+                </div>
+                <div class="status-item">
+                    <span class="label">Maximum Clicks:</span>
+                    <span class="value">10</span>
+                </div>
+                <div class="status-item">
+                    <span class="label">Progress:</span>
+                    <span class="value" id="progress-percentage">0%</span>
+                </div>
+                <div class="status-item">
+                    <span class="label">Gate Status:</span>
+                    <span class="value" id="gate-status">Closed</span>
+                </div>
+                <div class="status-item">
+                    <span class="label">Connected Clients:</span>
+                    <span class="value" id="connected-clients">0</span>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <h3>Controls</h3>
+                <div class="control-group">
+                    <button id="reset-button" class="reset">Reset Event</button>
+                    <button id="trigger-button">Simulate Click</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="admin-card">
+            <h2>Event Log</h2>
+            <div class="log-container" id="log-container"></div>
+        </div>
+    </div>
+    
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Connect to Socket.io
+            const socket = io();
+            
+            // DOM Elements
+            const currentClicks = document.getElementById('current-clicks');
+            const progressPercentage = document.getElementById('progress-percentage');
+            const gateStatus = document.getElementById('gate-status');
+            const connectedClients = document.getElementById('connected-clients');
+            const resetButton = document.getElementById('reset-button');
+            const triggerButton = document.getElementById('trigger-button');
+            const logContainer = document.getElementById('log-container');
+            
+            // Event listeners
+            resetButton.addEventListener('click', function() {
+                fetch('/reset-event', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        addLogEntry('Event reset successfully', 'success');
+                    } else {
+                        addLogEntry('Failed to reset event: ' + data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    addLogEntry('Error: ' + error.message, 'error');
+                });
+            });
+            
+            triggerButton.addEventListener('click', function() {
+                fetch('/trigger-event', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        addLogEntry('Click simulated - Current clicks: ' + data.currentClicks, 'info');
+                    } else {
+                        addLogEntry(data.message, 'warning');
+                    }
+                })
+                .catch(error => {
+                    addLogEntry('Error: ' + error.message, 'error');
+                });
+            });
+            
+            // Socket event handlers
+            socket.on('connect', function() {
+                addLogEntry('Connected to server', 'success');
+            });
+            
+            socket.on('disconnect', function() {
+                addLogEntry('Disconnected from server', 'error');
+            });
+            
+            socket.on('client-count', function(count) {
+                connectedClients.textContent = count;
+                addLogEntry('Client count updated: ' + count, 'info');
+            });
+            
+            socket.on('init-state', function(data) {
+                updateStatus(data);
+                addLogEntry('Received initial state', 'info');
+            });
+            
+            socket.on('gate-update', function(data) {
+                updateStatus(data);
+                addLogEntry('Gate update - Clicks: ' + data.currentClicks, 'info');
+            });
+            
+            socket.on('event-reset', function() {
+                currentClicks.textContent = '0';
+                progressPercentage.textContent = '0%';
+                gateStatus.textContent = 'Closed';
+                addLogEntry('Event was reset', 'warning');
+            });
+            
+            // Helper functions
+            function updateStatus(data) {
+                currentClicks.textContent = data.currentClicks;
+                progressPercentage.textContent = Math.floor((data.currentClicks / data.maxClicks) * 100) + '%';
+                
+                if (data.currentClicks === 0) {
+                    gateStatus.textContent = 'Closed';
+                } else if (data.currentClicks >= data.maxClicks) {
+                    gateStatus.textContent = 'Fully Open';
+                } else {
+                    gateStatus.textContent = 'Opening (' + Math.floor((data.currentClicks / data.maxClicks) * 100) + '%)';
+                }
+            }
+            
+            function addLogEntry(message, type = 'info') {
+                const entry = document.createElement('div');
+                entry.className = 'log-entry ' + type;
+                
+                const timestamp = document.createElement('span');
+                timestamp.className = 'timestamp';
+                timestamp.textContent = new Date().toLocaleTimeString();
+                
+                const messageSpan = document.createElement('span');
+                messageSpan.className = 'message';
+                messageSpan.textContent = message;
+                
+                entry.appendChild(timestamp);
+                entry.appendChild(messageSpan);
+                
+                logContainer.appendChild(entry);
+                logContainer.scrollTop = logContainer.scrollHeight;
+                
+                // Limit log entries to prevent memory issues
+                while (logContainer.children.length > 100) {
+                    logContainer.removeChild(logContainer.firstChild);
+                }
+            }
+            
+            // Add initial log entry
+            addLogEntry('Admin panel loaded', 'success');
+        });
+    </script>
+</body>
+</html>

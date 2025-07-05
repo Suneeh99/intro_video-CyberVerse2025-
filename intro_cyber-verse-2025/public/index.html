@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyber Verse 2025 - Access Terminal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Orbitron', sans-serif;
+            color: #0ff;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+            background-color: #010021;
+        }
+
+        .bg-video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+
+        .container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            gap: 100px;
+            width: 100%;
+        }
+
+        .content-section {
+            width: 40%;
+        }
+
+        .palm-section {
+            flex: 0 0 auto;
+            perspective: 1000px;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 10px #0ff, 0 0 20px #0ff;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #00ff4c;
+            margin-bottom: 1rem;
+            opacity: 0.8;
+        }
+
+        .access-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+            width: 100%;
+        }
+
+        .access-text {
+            font-size: 50px;
+            color: rgb(255, 255, 255);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            text-transform: uppercase;
+            margin-right: auto;
+            margin-left: auto;
+        }
+
+        .show-text {
+            opacity: 1;
+        }
+
+        .palm-scan-container {
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .palm-scan {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem;
+            border: 2px solid #0ff;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            transform: scale(1);
+            position: relative;
+            overflow: hidden;
+            width: 600px;
+            height: 600px;
+        }
+
+        .palm-scan:hover {
+            box-shadow: 0 0 30px #00ff4c, inset 0 0 30px #00ff4c;
+            transform: scale(1.1) rotateY(-10deg);
+        }
+
+        .hand-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            opacity: 0;
+            transition: all 0.5s ease;
+            pointer-events: none;
+            max-width: 300px;
+            z-index: 10;
+            box-shadow: 0 0 50px rgba(0, 255, 76, 0.5);
+            border-radius: 15px;
+        }
+
+        .palm-scan:hover .hand-overlay {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+
+        .hand-text {
+            margin-top: 0.5rem;
+            text-transform: uppercase;
+        }
+
+        .loading-spinner {
+            display: none;
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #00ff4c;
+            border-radius: 50%;
+            width: 100px;
+            height: 100px;
+            animation: spin 1.5s linear infinite;
+            margin-right: auto;
+            margin-left: auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .scan-line {
+            position: absolute;
+            width: 100%;
+            height: 3px;
+            background-color: #00ff4c;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            transition: opacity 0.5s ease, top 1s ease-in-out;
+        }
+
+        .scan-line.active {
+            opacity: 1;
+            animation: scanMove 3s linear;
+        }
+
+        @keyframes scanMove {
+            0% { top: 0%; }
+            50% { top: 100%; }
+            100% { top: 0%; }
+        }
+
+        .description {
+            text-align: left;
+            color: rgb(255, 255, 255);
+            opacity: 0.7;
+            margin-top: 2rem;
+            font-size: 0.9rem;
+        }
+        .logo-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <video class="bg-video" autoplay muted loop>
+        <source src="bgv.mp4" type="video/mp4">
+    </video>
+    <div class="container">
+        <div class="content-section">
+            <div class="logo-container" id="logo">
+                <img src="logo.png" alt="Logo" class="logo" style="width:100%;" id="logoContainer">
+            </div>
+            <div class="description" style="text-align: center; font-size: 1.5rem;">
+                Place your palm to start the countdown, replacing the traditional oil lamp ceremony with an interactive digital experience for Cyber Verse 2025.
+            </div>
+
+            <div class="access-container" style="text-align: center;">
+                <div class="access-text" id="access-text">READY FOR AUTHENTICATION</div>
+                <div class="loading-spinner" id="loading-spinner"></div>
+            </div>
+        </div>
+
+        <div class="palm-section">
+            <div class="palm-scan-container">
+                <div class="palm-scan" id="palm-scan">
+                    <img src="hand.png" alt="Hand Scan" style="width: 700px;">
+                    <div class="hand-text">SCAN PALM</div>
+                    <div class="scan-line" id="scan-line"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <audio id="scan-sound" src="scan-sound.mp3" preload="auto"></audio>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const palmScanDiv = document.getElementById('palm-scan');
+            const scanLine = document.getElementById('scan-line');
+            const accessText = document.getElementById('access-text');
+            const loadingSpinner = document.getElementById('loading-spinner');
+            const scanSound = document.getElementById('scan-sound');
+            const description = document.querySelector('.description');
+            const logoContainer = document.getElementById('logo');
+
+            function resetInterface() {
+                scanLine.classList.remove('active');
+                loadingSpinner.style.display = "none";
+                accessText.textContent = "READY FOR AUTHENTICATION";
+                accessText.classList.remove('show-text');
+
+                // Stop and reset sound
+                scanSound.pause();
+                scanSound.currentTime = 0;
+
+                // Show the description and logo again when leaving the palm scan area
+                description.style.display = 'block';
+                logoContainer.style.display = 'block';
+            }
+
+            palmScanDiv.addEventListener('mouseenter', function() {
+                // Hide the logo on hover
+                logoContainer.style.display = 'none';
+
+                // Play sound on hover
+                scanSound.loop = true;
+                scanSound.play().catch(e => console.error('Sound play error:', e));
+
+                // Activate scan line and loading
+                scanLine.classList.add('active');
+                loadingSpinner.style.display = "block";
+                accessText.textContent = "INITIALIZING SCAN...";
+                accessText.classList.add('show-text');
+
+                // Hide the description while hovering over the palm scan
+                description.style.display = 'none';
+
+                // 3-second scan simulation
+                setTimeout(function() {
+                    // Stop looping sound
+                    scanSound.loop = false;
+                    accessText.textContent = "SCAN COMPLETE";
+
+                    setTimeout(function() {
+                        accessText.textContent = "ACCESS REQUEST SENT";
+
+                        setTimeout(function() {
+                            accessText.textContent = "ACCESS GRANTED";
+                            sendRequestToServer(); // Send request once access is granted
+                        }, 1000);
+                    }, 1000);
+                }, 3000);
+
+                setTimeout(function() {
+                    loadingSpinner.style.display = "none";
+                }, 3000);
+            });
+
+            palmScanDiv.addEventListener('mouseleave', resetInterface);
+        });
+
+        function sendRequestToServer() {
+            fetch('/trigger-event', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Server response:', data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+</body>
+</html>

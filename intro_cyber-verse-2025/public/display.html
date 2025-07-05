@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyber Verse 2025 - Main Display</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Raleway:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Audiowide', sans-serif;
+            background-color: #000;
+            color: #0ff;
+            height: 100vh;
+            overflow: hidden;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        
+        .cyber-gate {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 1000px;
+        }
+        
+        .gate-left, .gate-right {
+            position: absolute;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0, 20, 40, 0.7), rgba(0, 40, 60, 0.7));
+            border: 2px solid #0ff;
+            box-shadow: 0 0 20px #0ff, inset 0 0 20px #0ff;
+            transition: transform 1s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .gate-left {
+            left: 0;
+            transform-origin: left;
+            transform: rotateY(0deg);
+        }
+        
+        .gate-right {
+            right: 0;
+            transform-origin: right;
+            transform: rotateY(0deg);
+        }
+        
+        .gate-left.open {
+            transform: rotateY(-90deg);
+        }
+        
+        .gate-right.open {
+            transform: rotateY(90deg);
+        }
+        
+        .logo-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 5;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+        
+        .logo {
+            max-width: 100%;
+            max-height: 100%;
+            filter: drop-shadow(0 0 15px rgb(255, 255, 255));
+        }
+        
+        .lightning {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 20;
+            opacity: 0;
+        }
+        
+        .lightning-bolt {
+            position: absolute;
+            background-color: #0ff;
+            box-shadow: 0 0 10px #0ff, 0 0 20px #0ff;
+            opacity: 0;
+        }
+        
+        .progress-bar {
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            height: 20px;
+            background-color: rgba(0, 40, 60, 0.5);
+            border: 2px solid #0ff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 10px #0ff;
+            transition: opacity 0.5s ease;
+        }
+        
+        .progress {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #0086ff, #00ff9d);
+            transition: width 0.5s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .progress::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 1.5s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .click-counter {
+            position: absolute;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.5rem;
+            color: #0ff;
+            text-shadow: 0 0 5px #0ff;
+            transition: opacity 0.5s ease;
+        }
+        
+        .flash {
+            animation: flash 0.5s;
+        }
+        
+        @keyframes flash {
+            0%, 50%, 100% { opacity: 0; }
+            25%, 75% { opacity: 1; }
+        }
+        
+        .event-title {
+            position: absolute;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 3rem;
+            color: #0ff;
+            text-shadow: 0 0 10px #0ff, 0 0 20px #0ff;
+            z-index: 30;
+        }
+        
+        .gate-pattern {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            pointer-events: none;
+        }
+        
+        .gate-text {
+            transform: rotateY(180deg);
+            font-size: 2rem;
+            color: #0ff;
+            text-shadow: 0 0 5px #0ff;
+            opacity: 0.7;
+        }
+        
+        /* Background Video */
+        .video-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        #background-video {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform-origin: center center;
+            transition: transform 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
+        }
+
+        .hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    
+    <!-- Background Video -->
+    <div class="video-container">
+        <video id="background-video" autoplay loop muted playsinline>
+            <source src="bg2.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+
+    <div class="lightning" id="lightning"></div>
+    <div class="circuit-lines" id="circuit-lines"></div>
+    <div class="click-counter" id="click-counter">ACCESS PROGRESS: <span id="click-count">0</span>/10</div>
+    <div class="progress-bar" id="progress-bar">
+        <div class="progress" id="progress"></div>
+    </div>
+    
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Connect to Socket.io
+            const socket = io();
+    
+            // DOM Elements
+            const backgroundVideo = document.getElementById('background-video');
+            const clickCount = document.getElementById('click-count');
+            const progress = document.getElementById('progress');
+            const lightning = document.getElementById('lightning');
+            const clickCounter = document.getElementById('click-counter');
+            const progressBar = document.getElementById('progress-bar');
+    
+            let requestCount = 0;
+            const maxRequests = 10;
+            let videoChanged = false;
+    
+            socket.on('gate-update', function(data) {
+                updateDisplay(data);
+            });
+    
+            function updateDisplay(data) {
+                // Update click counter
+                clickCount.textContent = data.currentClicks;
+                
+                // Update progress bar
+                const progressPercentage = (data.currentClicks / maxRequests) * 100;
+                progress.style.width = progressPercentage + '%';
+    
+                // Check if the request count reaches 10
+                if (data.currentClicks >= maxRequests && !videoChanged) {
+                    triggerGateOpening();
+                    videoChanged = true;
+                }
+            }
+    
+            function triggerGateOpening() {
+                // Hide progress elements with fade out
+                clickCounter.classList.add('hidden');
+                progressBar.classList.add('hidden');
+                
+                // Visual effects before video change
+                lightning.style.opacity = 1;
+                lightning.style.background = 'radial-gradient(circle, rgba(0,255,255,0.8) 0%, rgba(0,255,255,0) 70%)';
+                lightning.style.transition = 'opacity 1s';
+                
+                setTimeout(() => {
+                    playNewVideo();
+                    lightning.style.opacity = 0;
+                }, 1000);
+            }
+    
+            function playNewVideo() {
+                // Create a new video element for smoother transition
+                const newVideo = document.createElement('video');
+                newVideo.id = 'background-video';
+                newVideo.autoplay = true;
+                newVideo.loop = true;
+                newVideo.muted = false;
+                newVideo.playsinline = true;
+                
+                const source = document.createElement('source');
+                source.src = "countdown.mp4";
+                source.type = "video/mp4";
+                newVideo.appendChild(source);
+                
+                // Replace the video element
+                const container = document.querySelector('.video-container');
+                container.innerHTML = '';
+                container.appendChild(newVideo);
+                
+                // Handle autoplay restrictions
+                const playPromise = newVideo.play();
+                
+                if (playPromise !== undefined) {
+                    playPromise.catch(error => {
+                        // Autoplay was prevented, mute and try again
+                        newVideo.muted = true;
+                        newVideo.play()
+                            .then(() => {
+                                console.log("Video playing muted due to autoplay restrictions");
+                                // Try unmuting after playback starts
+                                setTimeout(() => {
+                                    newVideo.muted = false;
+                                }, 1000);
+                            })
+                            .catch(e => {
+                                console.error("Error trying to play video:", e);
+                            });
+                    });
+                }
+                
+                // Add event listeners for debugging
+                newVideo.addEventListener('error', (e) => {
+                    console.error('Video error:', e);
+                });
+                
+                newVideo.addEventListener('canplay', () => {
+                    console.log('Video can play');
+                });
+                
+                newVideo.addEventListener('playing', () => {
+                    console.log('Video is playing');
+                });
+            }
+        });
+    </script>
+</body>
+</html>
